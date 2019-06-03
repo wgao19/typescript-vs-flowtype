@@ -561,7 +561,7 @@ function foo(): string {
 
 ### TypeScript
 
-Not supported now, [proposal to tc39](https://github.com/microsoft/TypeScript/issues/25628).
+<!-- TODO: Need advise on TypeScript support for function statics -->
 
 ## Read-only Types
 
