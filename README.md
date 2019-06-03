@@ -540,29 +540,61 @@ function add(x, y) {
 }
 ```
 
-## Function statics and object callable properties
+## Object callable property
 
 ### Flow
 
-You can use objects with callable properties as function with statics. This is useful when annotating memoized functions.
+You can use objects with callable properties as functions.
 
 ```js
-type MemoizedFactorialType = {
-  cache: {
-    [number]: number,
-  },
-  [[call]](number): number,  // callable property
-}
+type ReturnString = {
+  (): string
+};
+const foo: ReturnString = () => "hello";
+const bar: string = foo();
+```
 
-const factorial: MemoizedFactorialType = n => {
-  if (!factorial.cache) {
-    factorial.cache = {}
+Multiple call properties are supported
+
+```js
+const foo: { (): string, (x: number): string } = function(x?: number): string {
+  return "bar";
+};
+```
+
+Reference:
+
+[Callable Objects](https://flow.org/en/docs/types/functions/#callable-objects-)
+
+### TypeScript
+
+```ts
+interface ReturnString {
+  (): string;
+}
+const foo: ReturnString = () => "hello";
+const bar: string = foo();
+```
+
+<!-- TODO: veryfy use case in TypeScript -->
+
+Reference:
+
+[Callable](https://github.com/basarat/typescript-book/blob/master/docs/types/callable.md)
+
+## Function statics
+
+### Flow
+
+Functions are also objects and you can annotate function statics.
+
+```js
+function foo(): string {
+  (foo.bar: string);
+  if (!foo.bar) {
+    foo.bar = "hello";
   }
-  if (factorial.cache[n] !== undefined) {
-    return factorial.cache[n]
-  }
-  factorial.cache[n] = n === 0 ? 1 : n * factorial(n - 1)
-  return factorial.cache[n]
+  return foo.bar;
 }
 ```
 
@@ -570,7 +602,6 @@ const factorial: MemoizedFactorialType = n => {
 
 Not supported now, [proposal to tc39](https://github.com/microsoft/TypeScript/issues/25628).
 
-## Read-only Types
 
 ### Flow
 
