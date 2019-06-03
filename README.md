@@ -540,6 +540,36 @@ function add(x, y) {
 }
 ```
 
+## Function statics and object callable properties
+
+### Flow
+
+You can use objects with callable properties as function with statics. This is useful when annotating memoized functions.
+
+```js
+type MemoizedFactorialType = {
+  cache: {
+    [number]: number,
+  },
+  [[call]](number): number,  // callable property
+}
+
+const factorial: MemoizedFactorialType = n => {
+  if (!factorial.cache) {
+    factorial.cache = {}
+  }
+  if (factorial.cache[n] !== undefined) {
+    return factorial.cache[n]
+  }
+  factorial.cache[n] = n === 0 ? 1 : n * factorial(n - 1)
+  return factorial.cache[n]
+}
+```
+
+### TypeScript
+
+Not supported now, [proposal to tc39](https://github.com/microsoft/TypeScript/issues/25628).
+
 ## Read-only Types
 
 ### Flow
