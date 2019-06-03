@@ -542,69 +542,6 @@ function add(x, y) {
 }
 ```
 
-## Object callable property
-
-### Flow
-
-You can use objects with callable properties as functions: [Try Flow](https://flow.org/try/#0PTAEAEDMBsHsHcBQiAuBPADgU1AMVALygDeiooAFAJQBcoAzigE4CWAdgOaIC+A3IgGNYbRqEh18RaoQB8oAEQALLNDjz+QkSlDLVsOo1adCY6ryA)
-
-```js
-type F = {
-  (): string
-};
-const f: F = () => "hello";
-const hello: string = f();
-```
-
-An overloaded function is a function with multiple call signatures.
-This is supported by Flow. And we list out the different syntaxes here: [Try Flow](https://flow.org/try/#0PTAEAEDMBsHsHcBQiAuBPADgU1AMVALygDeiooAFAJQBcoAzigE4CWAdgOYA0ZoA2nwDGAQ2jQAuuLoU2AVwC2AIyxMqhAHwNm7brwEixkio1adaW0x0QBfZINhtGoSHXxEKADwD8dOUpWgAD4WOmoEmqTkTFgoskxsoB6gXokAdCiwAMranNSgdADkBQDcNohAA)
-
-```js
-type F = {
-  (): string,	
-  [[call]]: (number) => string,	
-  [[call]](string): string
-}
-
-const f: F = (x?: number | string) => {
-  return x ? x.toString() : '';
-}
-```
-
-Reference:
-
-- [Callable Objects](https://flow.org/en/docs/types/functions/#callable-objects-)
-
-### TypeScript
-
-You can use objects with callable properties as functions: [TypeScript Playground](https://www.typescriptlang.org/play/#src=type%20F%20%3D%20%7B%0D%0A%20%20()%3A%20string%3B%0D%0A%7D%0D%0Aconst%20foo%3A%20F%20%3D%20()%20%3D%3E%20%22hello%22%3B%0D%0Aconst%20bar%3A%20string%20%3D%20foo()%3B)
-
-```ts
-type F = {
-  (): string;
-}
-const foo: F = () => "hello";
-const bar: string = foo();
-```
-
-An overloaded function is a function with multiple call signatures.
-This is also supported by TypeScript: [TypeScript Playground](https://www.typescriptlang.org/play/#src=type%20F%20%3D%20%7B%0D%0A%20%20()%3A%20string%2C%0D%0A%20%20(number)%3A%20string%2C%0D%0A%20%20(string)%3A%20string%0D%0A%7D%0D%0A%0D%0Aconst%20f%3A%20F%20%3D%20(x%3F%3A%20number%20%7C%20string)%20%3D%3E%20%7B%0D%0A%20%20return%20x%20%3F%20x.toString()%20%3A%20''%3B%0D%0A%7D%0D%0A)
-
-
-```ts
-type F = {
-  (): string,
-  (number): string,
-  (string): string
-}
-
-const f: F = (x?: number | string) => {
-  return x ? x.toString() : '';
-}
-```
-
-Reference:
-- [Callable on TypeScript Book](https://github.com/basarat/typescript-book/blob/master/docs/types/callable.md)
 
 ## Function statics
 
@@ -719,6 +656,76 @@ However, Flow implementation is stricter in this case, as B have a property that
 # Same syntax
 
 Most of the syntax of Flow and TypeScript is the same. TypeScript is more expressive for certain use-cases (advanced mapped types with keysof, readonly properties), and Flow is more expressive for others (e.g. `$Diff`).
+
+## Object callable property
+
+The basic syntax are the same, except Flow has special syntax for the internal call property slot.
+
+### Flow
+
+You can use objects with callable properties as functions: [Try Flow](https://flow.org/try/#0PTAEAEDMBsHsHcBQiAuBPADgU1AMVALygDeiooAFAJQBcoAzigE4CWAdgOaIC+A3IgGNYbRqEh18RaoQB8oAEQALLNDjz+QkSlDLVsOo1adCY6ryA)
+
+```js
+type F = {
+  (): string
+};
+const f: F = () => "hello";
+const hello: string = f();
+```
+
+An overloaded function is a function with multiple call signatures.
+This is supported by Flow. And we list out the different syntaxes here: [Try Flow](https://flow.org/try/#0PTAEAEDMBsHsHcBQiAuBPADgU1AMVALygDeiooAFAJQBcoAzigE4CWAdgOYA0ZoA2nwDGAQ2jQAuuLoU2AVwC2AIyxMqhAHwNm7brwEixkio1adaW0x0QBfZINhtGoSHXxEKADwD8dOUpWgAD4WOmoEmqTkTFgoskxsoB6gXokAdCiwAMranNSgdADkBQDcNohAA)
+
+```js
+type F = {
+  (): string,	
+  [[call]]: (number) => string,	
+  [[call]](string): string
+}
+
+const f: F = (x?: number | string) => {
+  return x ? x.toString() : '';
+}
+```
+
+Reference:
+
+- [Callable Objects](https://flow.org/en/docs/types/functions/#callable-objects-)
+- [immer.js](https://github.com/immerjs/immer/blob/master/src/immer.js.flow) uses it to overload the `produce` (default export) function which has multiple call signatures
+- [Styled Components](https://github.com/flow-typed/flow-typed/blob/master/definitions/npm/styled-components_v4.x.x/flow_v0.75.x-/styled-components_v4.x.x.js#L242) uses it to separate cases of being called on a string and wrapping a component 
+- [Reselect Library Definition](https://github.com/flow-typed/flow-typed/blob/master/definitions/npm/re-reselect_v2.x.x/flow_v0.67.1-/re-reselect_v2.x.x.js) contains massive chunks of overloaded call properties
+
+### TypeScript
+
+You can use objects with callable properties as functions: [TypeScript Playground](https://www.typescriptlang.org/play/#src=type%20F%20%3D%20%7B%0D%0A%20%20()%3A%20string%3B%0D%0A%7D%0D%0Aconst%20foo%3A%20F%20%3D%20()%20%3D%3E%20%22hello%22%3B%0D%0Aconst%20bar%3A%20string%20%3D%20foo()%3B)
+
+```ts
+type F = {
+  (): string;
+}
+const foo: F = () => "hello";
+const bar: string = foo();
+```
+
+An overloaded function is a function with multiple call signatures.
+This is also supported by TypeScript: [TypeScript Playground](https://www.typescriptlang.org/play/#src=type%20F%20%3D%20%7B%0D%0A%20%20()%3A%20string%2C%0D%0A%20%20(number)%3A%20string%2C%0D%0A%20%20(string)%3A%20string%0D%0A%7D%0D%0A%0D%0Aconst%20f%3A%20F%20%3D%20(x%3F%3A%20number%20%7C%20string)%20%3D%3E%20%7B%0D%0A%20%20return%20x%20%3F%20x.toString()%20%3A%20''%3B%0D%0A%7D%0D%0A)
+
+
+```ts
+type F = {
+  (): string,
+  (number): string,
+  (string): string
+}
+
+const f: F = (x?: number | string) => {
+  return x ? x.toString() : '';
+}
+```
+
+Reference:
+- [Callable on TypeScript Book](https://github.com/basarat/typescript-book/blob/master/docs/types/callable.md)
+
 
 ## optional parameters
 
