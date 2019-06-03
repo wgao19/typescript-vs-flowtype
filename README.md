@@ -576,7 +576,18 @@ const foo: ReturnString = () => "hello";
 const bar: string = foo();
 ```
 
-<!-- TODO: veryfy use case in TypeScript -->
+Overloading callable is supported
+
+```ts
+interface Overloaded {
+    (): string;
+    (x: number): string;
+}
+
+const foo: Overloaded = (x?: number) => { 
+    return 'bar';
+}
+```
 
 Reference:
 
