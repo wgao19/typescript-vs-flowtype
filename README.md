@@ -563,6 +563,7 @@ function foo(): string {
 
 Not supported now, [proposal to tc39](https://github.com/microsoft/TypeScript/issues/25628).
 
+## Read-only Types
 
 ### Flow
 
