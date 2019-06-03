@@ -519,6 +519,8 @@ add("1", "1"); // Ok
 add(1, "1"); // Error
 ```
 
+It is also possible to create function overloads using callable property syntax, see the section [Object callable property](#object-callable-property).
+
 ### TypeScript
 
 TypeScript supports both function and method overloading, in both: type definitions (`.d.ts`) and inline alongside code.
@@ -544,54 +546,65 @@ function add(x, y) {
 
 ### Flow
 
-You can use objects with callable properties as functions.
+You can use objects with callable properties as functions: [Try Flow](https://flow.org/try/#0PTAEAEDMBsHsHcBQiAuBPADgU1AMVALygDeiooAFAJQBcoAzigE4CWAdgOaIC+A3IgGNYbRqEh18RaoQB8oAEQALLNDjz+QkSlDLVsOo1adCY6ryA)
 
 ```js
-type ReturnString = {
+type F = {
   (): string
 };
-const foo: ReturnString = () => "hello";
-const bar: string = foo();
+const f: F = () => "hello";
+const hello: string = f();
 ```
 
-Multiple call properties are supported
+An overloaded function is a function with multiple call signatures.
+This is supported by Flow. And we list out the different syntaxes here: [Try Flow](https://flow.org/try/#0PTAEAEDMBsHsHcBQiAuBPADgU1AMVALygDeiooAFAJQBcoAzigE4CWAdgOYA0ZoA2nwDGAQ2jQAuuLoU2AVwC2AIyxMqhAHwNm7brwEixkio1adaW0x0QBfZINhtGoSHXxEKADwD8dOUpWgAD4WOmoEmqTkTFgoskxsoB6gXokAdCiwAMranNSgdADkBQDcNohAA)
 
 ```js
-const foo: { (): string, (x: number): string } = function(x?: number): string {
-  return "bar";
-};
+type F = {
+  (): string,	
+  [[call]]: (number) => string,	
+  [[call]](string): string
+}
+
+const f: F = (x?: number | string) => {
+  return x ? x.toString() : '';
+}
 ```
 
 Reference:
 
-[Callable Objects](https://flow.org/en/docs/types/functions/#callable-objects-)
+- [Callable Objects](https://flow.org/en/docs/types/functions/#callable-objects-)
 
 ### TypeScript
 
+You can use objects with callable properties as functions: [TypeScript Playground](https://www.typescriptlang.org/play/#src=type%20F%20%3D%20%7B%0D%0A%20%20()%3A%20string%3B%0D%0A%7D%0D%0Aconst%20foo%3A%20F%20%3D%20()%20%3D%3E%20%22hello%22%3B%0D%0Aconst%20bar%3A%20string%20%3D%20foo()%3B)
+
 ```ts
-interface ReturnString {
+type F = {
   (): string;
 }
-const foo: ReturnString = () => "hello";
+const foo: F = () => "hello";
 const bar: string = foo();
 ```
 
-Overloading callable is supported
+An overloaded function is a function with multiple call signatures.
+This is also supported by TypeScript: [TypeScript Playground](https://www.typescriptlang.org/play/#src=type%20F%20%3D%20%7B%0D%0A%20%20()%3A%20string%2C%0D%0A%20%20(number)%3A%20string%2C%0D%0A%20%20(string)%3A%20string%0D%0A%7D%0D%0A%0D%0Aconst%20f%3A%20F%20%3D%20(x%3F%3A%20number%20%7C%20string)%20%3D%3E%20%7B%0D%0A%20%20return%20x%20%3F%20x.toString()%20%3A%20''%3B%0D%0A%7D%0D%0A)
+
 
 ```ts
-interface Overloaded {
-    (): string;
-    (x: number): string;
+type F = {
+  (): string,
+  (number): string,
+  (string): string
 }
 
-const foo: Overloaded = (x?: number) => { 
-    return 'bar';
+const f: F = (x?: number | string) => {
+  return x ? x.toString() : '';
 }
 ```
 
 Reference:
-
-[Callable](https://github.com/basarat/typescript-book/blob/master/docs/types/callable.md)
+- [Callable on TypeScript Book](https://github.com/basarat/typescript-book/blob/master/docs/types/callable.md)
 
 ## Function statics
 
