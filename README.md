@@ -542,27 +542,6 @@ function add(x, y) {
 }
 ```
 
-
-## Function statics
-
-### Flow
-
-Functions are also objects and you can annotate function statics.
-
-```js
-function foo(): string {
-  (foo.bar: string);
-  if (!foo.bar) {
-    foo.bar = "hello";
-  }
-  return foo.bar;
-}
-```
-
-### TypeScript
-
-<!-- TODO: Need advise on TypeScript support for function statics -->
-
 ## Read-only Types
 
 ### Flow
@@ -662,6 +641,8 @@ Most of the syntax of Flow and TypeScript is the same. TypeScript is more expres
 
 The basic syntax are the same, except Flow has special syntax for the internal call property slot.
 
+Both can be used to annotate function statics.
+
 ### Flow
 
 You can use objects with callable properties as functions: [Try Flow](https://flow.org/try/#0PTAEAEDMBsHsHcBQiAuBPADgU1AMVALygDeiooAFAJQBcoAzigE4CWAdgOaIC+A3IgGNYbRqEh18RaoQB8oAEQALLNDjz+QkSlDLVsOo1adCY6ryA)
@@ -686,6 +667,28 @@ type F = {
 
 const f: F = (x?: number | string) => {
   return x ? x.toString() : '';
+}
+```
+
+Use call property to annotate function statics: [Try Flow](https://flow.org/try/#0PTAEAEDMBsHsHcBQiAuBPADgU1AWSwLawCWAXlgCYBiAhgMYqwBOxN0AKpjgLygDeiUKDr0AFlgBc-QaACQAbQB2AVwIAjLEwC6Ules0yAvgBoZ8+SOjQtWgBR6NTAJS7Vj04eR1YigM4pQSHpGFjYpfCIySloGZlYOLlBeRSSAPmkhYkhQWwBCINjQ6AA6ETpxJwyhQOC4tlKxHn5PIRbQLJyCkPiG8qwlLVBc7l5lRQosSGJFSkqBatAmLBRlJhSuupKy8QGjGQ2i3p3FQeSkkdAABlAAflAARlBdUAAqGsL4+1AAWgenGSWKzW7269W2-ROiEMQA)
+
+```js
+type MemoizedFactorialType = {
+  cache: {
+    [number]: number,
+  },
+  [[call]](number): number,
+}
+
+const factorial: MemoizedFactorialType = n => {
+  if (!factorial.cache) {
+    factorial.cache = {}
+  }
+  if (factorial.cache[n] !== undefined) {
+    return factorial.cache[n]
+  }
+  factorial.cache[n] = n === 0 ? 1 : n * factorial(n - 1)
+  return factorial.cache[n]
 }
 ```
 
@@ -715,12 +718,34 @@ This is also supported by TypeScript: [TypeScript Playground](https://www.typesc
 ```ts
 type F = {
   (): string,
-  (number): string,
-  (string): string
+  (x: number): string,
+  (x: string): string
 }
 
 const f: F = (x?: number | string) => {
   return x ? x.toString() : '';
+}
+```
+
+Use call property to annotate function statics: [TypeScript Playground](https://www.typescriptlang.org/play/#src=type%20MemoizedFactorialType%20%3D%20%7B%0D%0A%20%20cache%3F%3A%20%7B%0D%0A%20%20%20%20%5Bn%3A%20number%5D%3A%20number%2C%0D%0A%20%20%7D%2C%0D%0A%20%20(n%3A%20number)%3A%20number%2C%0D%0A%7D%0D%0A%0D%0Aconst%20factorial%3A%20MemoizedFactorialType%20%3D%20n%20%3D%3E%20%7B%0D%0A%20%20if%20(!factorial.cache)%20%7B%0D%0A%20%20%20%20factorial.cache%20%3D%20%7B%7D%0D%0A%20%20%7D%0D%0A%20%20else%20if%20(factorial.cache%5Bn%5D%20!%3D%3D%20undefined)%20%7B%0D%0A%20%20%20%20return%20factorial.cache%5Bn%5D%0D%0A%20%20%7D%0D%0A%20%20factorial.cache%5Bn%5D%20%3D%20n%20%3D%3D%3D%200%20%3F%201%20%3A%20n%20*%20factorial(n%20-%201)%0D%0A%20%20return%20factorial.cache%5Bn%5D%0D%0A%7D)
+
+```ts
+type MemoizedFactorialType = {
+  cache?: {
+    [n: number]: number,
+  },
+  (n: number): number,
+}
+
+const factorial: MemoizedFactorialType = n => {
+  if (!factorial.cache) {
+    factorial.cache = {}
+  }
+  else if (factorial.cache[n] !== undefined) {
+    return factorial.cache[n]
+  }
+  factorial.cache[n] = n === 0 ? 1 : n * factorial(n - 1)
+  return factorial.cache[n]
 }
 ```
 
